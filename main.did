@@ -1,0 +1,79 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type Profile = 
+ record {
+   avatarUrl: text;
+   displayName: text;
+ };
+type PostOption = 
+ record {
+   content: text;
+   style: text;
+ };
+type Post = 
+ record {
+   author: principal;
+   authorName: text;
+   comments: vec Comment;
+   content: text;
+   id: nat;
+   likes: vec principal;
+   timestamp: int;
+ };
+type Message = 
+ record {
+   body: text;
+   id: nat;
+   recipient: principal;
+   sender: principal;
+   timestamp: int;
+ };
+type ConversationSummary = 
+ record {
+   lastMessage: text;
+   lastTimestamp: int;
+   otherUser: principal;
+   otherUserName: text;
+ };
+type Comment = 
+ record {
+   author: principal;
+   authorName: text;
+   "text": text;
+   timestamp: int;
+ };
+service : {
+  addComment: (postId: nat, "text": text) -> (bool);
+  createPost: (content: text) -> (nat);
+  generatePostOptions: (rawThought: text) -> (vec PostOption);
+  getConversations: () -> (vec ConversationSummary) query;
+  getMessages: (otherUser: principal) -> (vec Message) query;
+  getMyProfile: () -> (opt Profile) query;
+  getPosts: (offset: nat, limit: nat) -> (vec Post) query;
+  getPostsByUser: (user: principal) -> (vec Post) query;
+  getProfile: (user: principal) -> (opt Profile) query;
+  likePost: (postId: nat) -> (bool);
+  sendMessage: (recipient: principal, body: text) -> (nat);
+  setProfile: (displayName: text, avatarUrl: text) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+}
